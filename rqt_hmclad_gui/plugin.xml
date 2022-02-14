@@ -1,0 +1,20 @@
+<library path="lib/librqt_hmclad_gui">
+  <class name="rqt_hmclad_gui/RqtHmclADPlugin" type="rqt_hmclad_gui::RqtHmclADPlugin" base_class_type="rqt_gui_cpp::Plugin">
+    <description>
+      An example Python GUI plugin to create a great user interface.
+    </description>
+    <qtgui>
+      <group>
+        <label> hmclad </label>
+      </group>
+      <!-- optional grouping...
+      <group>
+        <label>Subgroup</label>
+      </group>
+      -->
+      <label>hmclad Gui</label>
+      <!-- <icon type="file">resource/lablogo.png</icon> -->
+      <statustip>Great user interface to provide real value.</statustip>
+    </qtgui>
+  </class>
+</library>
