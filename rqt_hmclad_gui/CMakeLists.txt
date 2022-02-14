@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   rqt_gui
   rqt_gui_cpp
   std_msgs
+  ackermann_msgs
 )
 
 find_package(Qt5Widgets REQUIRED)
@@ -62,4 +63,5 @@ target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
   Qt5::Widgets  
   ${QT_LIBRARIES}
+  -lpthread
 )

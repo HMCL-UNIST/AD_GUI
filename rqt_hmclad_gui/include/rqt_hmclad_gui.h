@@ -7,6 +7,9 @@
 #include <QWidget>
 
 #include <std_msgs/Float32.h>
+#include <ackermann_msgs/AckermannDrive.h>
+#include <geometry_msgs/TwistStamped.h>
+
 #include <iostream>
 #include <ros/ros.h>
 // #include "qglbegin.h"
@@ -25,10 +28,18 @@ public:
   virtual void shutdownPlugin();
   virtual void saveSettings(qt_gui_cpp::Settings& plugin_settings, qt_gui_cpp::Settings& instance_settings) const;
   virtual void restoreSettings(const qt_gui_cpp::Settings& plugin_settings, const qt_gui_cpp::Settings& instance_settings);
+
   ros::Publisher myPub;
+  ros::Publisher manualDrivePub;
   std_msgs::Float32 myMsg;
   ros::Subscriber mySub;
+  ros::Subscriber velSub;
+  
+  float target_speed, target_steering;
+  
+  
   void subcallback(const std_msgs::Float32ConstPtr &msg);
+  void current_velCbk(const geometry_msgs::TwistStampedConstPtr &msg);
   
 // public Q_SLOTS:
   
@@ -52,7 +63,7 @@ protected:
 // protected:
 //   QGLBegin* QGLBegin_;
     float linear_velocity_;
-  float angular_velocity_;
+    float angular_velocity_;
 //signals:
   // Comment in to signal that the plugin has a way to configure it
   //bool hasConfiguration() const;

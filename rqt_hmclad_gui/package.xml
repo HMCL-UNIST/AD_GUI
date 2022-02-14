@@ -61,7 +61,9 @@
   <exec_depend>rqt_gui</exec_depend>
   <exec_depend>rqt_gui_cpp</exec_depend>
   <exec_depend>std_msgs</exec_depend>
-
+  <exec_depend>ackermann_msgs</exec_depend>
+  
+  <build_depend>ackermann_msgs</build_depend>
   <build_depend>qtbase5-dev</build_depend>
   <build_depend>rviz</build_depend>
   <exec_depend>libqt5-core</exec_depend>

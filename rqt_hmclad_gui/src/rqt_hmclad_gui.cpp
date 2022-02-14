@@ -12,9 +12,12 @@
 #include <QLabel>
 #include <QTimer>
 #include "drive_widget.h"
+#include <pthread.h>
 
 // QGLBegin_ = new QGLBegin;
 namespace rqt_hmclad_gui {
+
+
 
 RqtHmclADPlugin::RqtHmclADPlugin()
   : rqt_gui_cpp::Plugin()
@@ -28,6 +31,8 @@ RqtHmclADPlugin::RqtHmclADPlugin()
   setObjectName("RqtHmclADPlugin");
   drive_widget_ = new DriveWidget;
 
+  
+ 
 
 }
 
@@ -51,17 +56,33 @@ void RqtHmclADPlugin::initPlugin(qt_gui_cpp::PluginContext& context)
   connect(ui_.etc_button, SIGNAL(clicked()), this, SLOT(push_etc_button()));
   connect(ui_.Mdrive_switch, SIGNAL(clicked()), this, SLOT(push_MDrive_button()));
   connect(ui_.widget, SIGNAL( outputVelocity( float, float )), this, SLOT( MDrive_setVel( float, float )));
-
+  
   // QGLBegin_ = new QGLBegin;
   
   
-  
+  velSub = nh_.subscribe("/current_velocity",1,&RqtHmclADPlugin::current_velCbk, this);
   mySub = nh_.subscribe("/subs",100,&RqtHmclADPlugin::subcallback, this);
   myPub = nh_.advertise<std_msgs::Float32>("/subs",100);
+  manualDrivePub = nh_.advertise<ackermann_msgs::AckermannDrive>("/carla/ego_vehicle/ackermann_cmd",1);
+  
+
+  
+}
+
+void RqtHmclADPlugin::current_velCbk(const geometry_msgs::TwistStampedConstPtr &msg){  
+  int current_speed = (int)msg->twist.linear.x;  
+  ui_.speedLCD->setSegmentStyle(QLCDNumber::Outline);
+  ui_.speedLCD->display(current_speed);
 }
 
 void RqtHmclADPlugin::MDrive_setVel(float linear_vel, float angular_vel){
   std::cout << "linear vel = " << linear_vel << ", angular vel = " << angular_vel << std::endl;
+  target_speed = linear_vel;
+  target_steering  = angular_vel;
+  ackermann_msgs::AckermannDrive manual_drive_msg;
+  manual_drive_msg.speed = target_speed;
+  manual_drive_msg.steering_angle = fmax(-0.52,fmin(angular_vel,0.52));
+  manualDrivePub.publish(manual_drive_msg);
 }
 
 void RqtHmclADPlugin::push_MDrive_button(){
@@ -93,10 +114,7 @@ void RqtHmclADPlugin::push_launch_button(){
   std::cout <<"System has been initialized" << std::endl;
   ui_.SystemStatus->setStyleSheet(QStringLiteral("QLabel{color: rgb(0, 255, 0);}"));
   ui_.SystemStatus->setText("SYSTEM INITIALIZED");  
-  int current_speed = 10;
-  // ui_.speedLCD->setDecMode(QLCDNumber::Dec);
-  ui_.speedLCD->setSegmentStyle(QLCDNumber::Outline);
-  ui_.speedLCD->display(current_speed);
+  
   // myPub.publish(myMsg);
 }
 
